@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { ChevronDown, ChevronRight, FolderOpen, FolderTree, KanbanSquare } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { PendingLink } from "@/components/shared/pending-link";
 import { cn } from "@/lib/utils";
 
 type FolderNode = {
@@ -30,6 +30,7 @@ export function ExplorerTree({
   assets,
   selectedFolderId,
   selectedAssetId,
+  variant = "panel",
 }: {
   title: string;
   basePath: string;
@@ -37,22 +38,37 @@ export function ExplorerTree({
   assets: AssetNode[];
   selectedFolderId?: string | null;
   selectedAssetId?: string | null;
+  variant?: "panel" | "sidebar";
 }) {
   const expandedDefaults = useMemo(
     () => new Set(getExpandedFolderIds(folders, assets, selectedFolderId, selectedAssetId)),
     [assets, folders, selectedAssetId, selectedFolderId],
   );
   const [expandedFolders, setExpandedFolders] = useState(expandedDefaults);
+  const isSidebar = variant === "sidebar";
+
+  useEffect(() => {
+    setExpandedFolders(expandedDefaults);
+  }, [expandedDefaults]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">Explorer</p>
-          <h2 className="mt-1 text-sm font-semibold text-zinc-950 dark:text-zinc-50">{title}</h2>
+    <div className={cn("space-y-4", isSidebar && "space-y-2")}>
+      {isSidebar ? (
+        <div className="flex items-center justify-between gap-3 px-2 pt-1">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-400">
+            {title}
+          </h2>
+          <Badge variant="neutral">{assets.length}</Badge>
         </div>
-        <Badge variant="neutral">{assets.length} projects</Badge>
-      </div>
+      ) : (
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">Explorer</p>
+            <h2 className="mt-1 text-sm font-semibold text-zinc-950 dark:text-zinc-50">{title}</h2>
+          </div>
+          <Badge variant="neutral">{assets.length} projects</Badge>
+        </div>
+      )}
 
       <div className="space-y-1">
         <FolderBranch
@@ -65,6 +81,7 @@ export function ExplorerTree({
           selectedAssetId={selectedAssetId}
           selectedFolderId={selectedFolderId}
           setExpandedFolders={setExpandedFolders}
+          variant={variant}
         />
       </div>
     </div>
@@ -81,6 +98,7 @@ function FolderBranch({
   selectedFolderId,
   selectedAssetId,
   basePath,
+  variant,
 }: {
   folders: FolderNode[];
   assets: AssetNode[];
@@ -91,9 +109,11 @@ function FolderBranch({
   selectedFolderId?: string | null;
   selectedAssetId?: string | null;
   basePath: string;
+  variant: "panel" | "sidebar";
 }) {
   const childFolders = folders.filter((folder) => folder.parentFolderId === parentFolderId);
   const childAssets = assets.filter((asset) => asset.folderId === parentFolderId);
+  const isSidebar = variant === "sidebar";
 
   return (
     <>
@@ -130,12 +150,14 @@ function FolderBranch({
                 )}
               </button>
 
-              <Link
+              <PendingLink
+                busyMessage="Loading folder..."
                 className={cn(
                   "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-2 text-sm transition",
                   selectedFolderId === folder.id
                     ? "bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
+                  isSidebar && "py-1.5",
                 )}
                 href={`${basePath}?folder=${folder.id}`}
                 style={{ paddingLeft: `${level * 14 + 8}px` }}
@@ -146,7 +168,7 @@ function FolderBranch({
                   <FolderTree className="h-4 w-4 shrink-0" />
                 )}
                 <span className="truncate">{folder.name}</span>
-              </Link>
+              </PendingLink>
             </div>
 
             {isExpanded ? (
@@ -160,6 +182,7 @@ function FolderBranch({
                 selectedAssetId={selectedAssetId}
                 selectedFolderId={selectedFolderId}
                 setExpandedFolders={setExpandedFolders}
+                variant={variant}
               />
             ) : null}
           </div>
@@ -167,12 +190,14 @@ function FolderBranch({
       })}
 
       {childAssets.map((asset) => (
-        <Link
+        <PendingLink
+          busyMessage="Loading project..."
           className={cn(
             "flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition",
             selectedAssetId === asset.id
               ? "bg-zinc-950 text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-950"
               : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-50",
+            isSidebar && "py-1.5",
           )}
           href={`${basePath}/${asset.id}`}
           key={asset.id}
@@ -186,7 +211,7 @@ function FolderBranch({
           <span className="rounded-full bg-black/8 px-2 py-1 text-[11px] font-medium dark:bg-white/10">
             {asset.openTaskCount ?? asset.taskCount ?? 0}
           </span>
-        </Link>
+        </PendingLink>
       ))}
     </>
   );

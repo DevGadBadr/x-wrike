@@ -34,6 +34,7 @@ export function OnboardingForm({
   );
   const autoLoginStarted = useRef(false);
   const signingIn = state.status === "success";
+  const isBusy = pending || signingIn;
   const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
@@ -66,20 +67,27 @@ export function OnboardingForm({
       password,
       callbackUrl: "/dashboard",
       redirect: false,
-    }).then((result) => {
-      if (!result || result.error) {
+    })
+      .then((result) => {
+        if (!result || result.error) {
+          autoLoginStarted.current = false;
+          toast.error("Profile was saved, but automatic sign-in failed. Use your new email password on the sign-in page.");
+          router.push("/auth/signin");
+          return;
+        }
+
+        window.location.assign(result.url ?? "/dashboard");
+      })
+      .catch(() => {
         autoLoginStarted.current = false;
         toast.error("Profile was saved, but automatic sign-in failed. Use your new email password on the sign-in page.");
         router.push("/auth/signin");
-        return;
-      }
-
-      window.location.assign(result.url ?? "/dashboard");
-    });
+      });
   }, [defaultEmail, form, router, state.status]);
 
   return (
     <form
+      aria-busy={isBusy}
       className="space-y-5"
       onSubmit={form.handleSubmit((values) => {
         const payload = new FormData();
@@ -99,15 +107,15 @@ export function OnboardingForm({
       </div>
       <div className="space-y-2">
         <Label htmlFor="fullName">Full name</Label>
-        <Input id="fullName" {...form.register("fullName")} />
+        <Input disabled={isBusy} id="fullName" {...form.register("fullName")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
-        <Input id="title" placeholder="Project Manager" {...form.register("title")} />
+        <Input disabled={isBusy} id="title" placeholder="Project Manager" {...form.register("title")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="department">Department</Label>
-        <Select id="department" {...form.register("department")}>
+        <Select disabled={isBusy} id="department" {...form.register("department")}>
           {DEPARTMENT_OPTIONS.map((department) => (
             <option key={department} value={department}>
               {department}
@@ -119,6 +127,7 @@ export function OnboardingForm({
         <Label htmlFor="password">Password</Label>
         <Input
           autoComplete="new-password"
+          disabled={isBusy}
           id="password"
           type="password"
           {...form.register("password")}
@@ -128,12 +137,13 @@ export function OnboardingForm({
         <Label htmlFor="confirmPassword">Confirm password</Label>
         <Input
           autoComplete="new-password"
+          disabled={isBusy}
           id="confirmPassword"
           type="password"
           {...form.register("confirmPassword")}
         />
       </div>
-      <Button className="w-full" disabled={pending || signingIn} type="submit">
+      <Button className="w-full" disabled={isBusy} type="submit">
         {pending ? "Completing setup..." : signingIn ? "Signing you in..." : "Create account"}
       </Button>
     </form>

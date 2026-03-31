@@ -12,7 +12,7 @@ export default function AuthErrorPage() {
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-zinc-500 dark:text-zinc-400">
           <p>
-            x-wrike only allows invited or existing workspace emails to authenticate.
+            XManager only allows invited or existing workspace emails to authenticate.
           </p>
           <p>
             If you expected access, ask a workspace administrator to invite your email and then reopen the invite link to create your account.

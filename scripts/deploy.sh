@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_NAME="x-wrike-3008"
+APP_NAME="xmanager-3008"
 
 cd "$ROOT_DIR"
 

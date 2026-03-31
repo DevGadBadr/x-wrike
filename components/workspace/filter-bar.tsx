@@ -1,12 +1,13 @@
 "use client";
 
-import { startTransition, useDeferredValue, useEffect, useEffectEvent, useState } from "react";
+import { useDeferredValue, useEffect, useEffectEvent, useState, useTransition } from "react";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { useSyncAppBusyState } from "@/components/providers/app-navigation-provider";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 
 type AssigneeOption = {
   id: string;
@@ -28,6 +29,9 @@ export function WorkspaceFilterBar({
   const [search, setSearch] = useState(initialSearch ?? "");
   const [assigneeId, setAssigneeId] = useState(initialAssigneeId ?? "");
   const deferredSearch = useDeferredValue(search);
+  const [isPending, startTransition] = useTransition();
+
+  useSyncAppBusyState("project-filters", isPending, "Refreshing project filters...");
 
   const syncFilters = useEffectEvent((nextSearch: string, nextAssigneeId: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -66,45 +70,33 @@ export function WorkspaceFilterBar({
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <label className="relative block w-full xl:max-w-sm">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <label className="relative block">
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400">
+            Search tasks
+          </span>
+          <Search className="pointer-events-none absolute left-3 top-[calc(50%+10px)] h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <Input
             className="pl-9"
+            disabled={isPending}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search tasks, descriptions, or keywords"
+            placeholder="Search by task name or description"
             value={search}
           />
         </label>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            className={cn(
-              "rounded-full px-4",
-              !assigneeId && "bg-sky-600 hover:bg-sky-500",
-            )}
-            onClick={() => setAssigneeId("")}
-            size="sm"
-            type="button"
-            variant={!assigneeId ? "default" : "secondary"}
-          >
-            All assignees
-          </Button>
-          {assignees.map((assignee) => (
-            <Button
-              className={cn(
-                "rounded-full px-4",
-                assigneeId === assignee.id && "bg-sky-600 hover:bg-sky-500",
-              )}
-              key={assignee.id}
-              onClick={() => setAssigneeId(assignee.id)}
-              size="sm"
-              type="button"
-              variant={assigneeId === assignee.id ? "default" : "secondary"}
-            >
-              {assignee.label}
-            </Button>
-          ))}
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400" htmlFor="assignee-filter">
+            Assignee
+          </Label>
+          <Select disabled={isPending} id="assignee-filter" onChange={(event) => setAssigneeId(event.target.value)} value={assigneeId}>
+            <option value="">All assignees</option>
+            {assignees.map((assignee) => (
+              <option key={assignee.id} value={assignee.id}>
+                {assignee.label}
+              </option>
+            ))}
+          </Select>
         </div>
       </div>
     </div>

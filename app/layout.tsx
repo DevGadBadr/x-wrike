@@ -6,7 +6,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "x-wrike",
+  title: "XManager",
   description: "Workspace-based project and team management built with Next.js.",
 };
 

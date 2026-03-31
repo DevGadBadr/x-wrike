@@ -14,7 +14,7 @@ const envSchema = z.object({
   MAIL_FROM_NAME: z.string().min(1),
   APP_URL: z.string().url(),
   INVITE_TOKEN_TTL_HOURS: z.coerce.number().int().positive().default(168),
-  DEFAULT_WORKSPACE_NAME: z.string().min(1).default("x-wrike Workspace"),
+  DEFAULT_WORKSPACE_NAME: z.string().min(1).default("XManager Workspace"),
   DEFAULT_OWNER_EMAIL: z.string().email().default("owner@example.com"),
 });
 

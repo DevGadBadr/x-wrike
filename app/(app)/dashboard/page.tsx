@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { ActivityFeed } from "@/components/shared/activity-feed";
+import { PendingLink } from "@/components/shared/pending-link";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatCard } from "@/components/shared/stat-card";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +34,8 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {dashboard.assignedTasks.map((task) => (
-              <Link
+              <PendingLink
+                busyMessage="Opening task..."
                 className="block rounded-xl border border-zinc-200 p-4 transition hover:border-indigo-300 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:border-indigo-500/30 dark:hover:bg-zinc-800/50"
                 href={`/tasks/${task.id}`}
                 key={task.id}
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
                 <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
                   Due {formatDate(task.dueDate)}
                 </p>
-              </Link>
+              </PendingLink>
             ))}
           </CardContent>
         </Card>

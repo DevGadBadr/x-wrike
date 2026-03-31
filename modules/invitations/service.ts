@@ -283,7 +283,7 @@ export async function acceptInvitation(input: {
     workspaceId: invitation.workspaceId,
     userId: result.user.id,
     type: "WELCOME",
-    title: "Welcome to x-wrike",
+    title: "Welcome to XManager",
     body: `Your access to ${invitation.workspace.name} is active.`,
     link: "/dashboard",
   });

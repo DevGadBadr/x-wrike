@@ -38,7 +38,7 @@ export function SignInForm({
   initialError?: string;
 }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(getErrorMessage(initialError));
-  const [pending, setPending] = useState(false);
+  const [pendingMethod, setPendingMethod] = useState<"credentials" | "google" | null>(null);
   const form = useForm<SignInValues>({
     resolver: zodResolver(credentialsSignInSchema),
     defaultValues: {
@@ -46,35 +46,42 @@ export function SignInForm({
       password: "",
     },
   });
+  const isBusy = pendingMethod !== null;
 
   return (
     <form
+      aria-busy={isBusy}
       className="space-y-5"
       onSubmit={form.handleSubmit(async (values) => {
-        setPending(true);
+        setPendingMethod("credentials");
         setErrorMessage(null);
 
-        const result = await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          callbackUrl,
-          redirect: false,
-        });
+        try {
+          const result = await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            callbackUrl,
+            redirect: false,
+          });
 
-        setPending(false);
+          if (!result || result.error) {
+            setPendingMethod(null);
+            setErrorMessage(getErrorMessage(result?.error) ?? "Unable to sign in right now.");
+            return;
+          }
 
-        if (!result || result.error) {
-          setErrorMessage(getErrorMessage(result?.error) ?? "Unable to sign in right now.");
-          return;
+          window.location.assign(result.url ?? callbackUrl);
+        } catch {
+          setPendingMethod(null);
+          setErrorMessage("Unable to sign in right now.");
         }
-
-        window.location.assign(result.url ?? callbackUrl);
       })}
     >
       <div className="space-y-2">
         <Label htmlFor="signin-email">Email</Label>
         <Input
           autoComplete="email"
+          disabled={isBusy}
           id="signin-email"
           placeholder="member@example.com"
           {...form.register("email")}
@@ -84,20 +91,33 @@ export function SignInForm({
         <Label htmlFor="signin-password">Password</Label>
         <Input
           autoComplete="current-password"
+          disabled={isBusy}
           id="signin-password"
           type="password"
           {...form.register("password")}
         />
       </div>
       {errorMessage ? <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p> : null}
-      <Button className="w-full" disabled={pending} type="submit">
-        {pending ? "Signing in..." : "Sign in with email"}
+      <Button className="w-full" disabled={isBusy} type="submit">
+        {pendingMethod === "credentials" ? "Signing in..." : "Sign in with email"}
       </Button>
       <div className="space-y-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Google is optional and only works when it uses the same invited email.
         </p>
-        <GoogleSignInButton callbackUrl={callbackUrl} className="w-full" variant="outline" />
+        {pendingMethod === "google" ? (
+          <p className="text-sm text-sky-600 dark:text-sky-300">
+            Redirecting to Google. Please wait...
+          </p>
+        ) : null}
+        <GoogleSignInButton
+          busyLabel="Redirecting to Google..."
+          callbackUrl={callbackUrl}
+          className="w-full"
+          disabled={isBusy}
+          onPendingChange={(pending) => setPendingMethod(pending ? "google" : null)}
+          variant="outline"
+        />
       </div>
     </form>
   );

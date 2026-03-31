@@ -21,7 +21,7 @@ export default async function Home() {
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 lg:px-10">
       <header className="flex items-center justify-between rounded-2xl border border-zinc-200/80 bg-white/70 px-5 py-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-indigo-500">x-wrike</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-indigo-500">XManager</p>
           <h1 className="mt-1 text-lg font-semibold">Work coordination for delivery teams</h1>
         </div>
         <SignInButton />
@@ -37,7 +37,7 @@ export default async function Home() {
               Keep teams, projects, tasks, and accountability in one controlled workspace.
             </h2>
             <p className="max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-              x-wrike is a lightweight Wrike-style platform for operational teams that need structured invites,
+              XManager is a lightweight Wrike-style platform for operational teams that need structured invites,
               role-based access, project visibility, assignment notifications, and activity tracking without a heavy setup.
             </p>
           </div>

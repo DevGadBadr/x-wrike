@@ -23,7 +23,7 @@ export default async function SignInPage({
     <main className="flex min-h-screen items-center justify-center px-6 py-12">
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-3">
-          <CardTitle>Sign in to x-wrike</CardTitle>
+          <CardTitle>Sign in to XManager</CardTitle>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Use the invited email and password you created from your workspace invite. Google stays
             available as an optional same-email sign-in method.

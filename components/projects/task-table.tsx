@@ -1,7 +1,9 @@
 "use client";
 
+import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useSyncAppBusyState } from "@/components/providers/app-navigation-provider";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn, formatDate } from "@/lib/utils";
@@ -31,19 +33,27 @@ export function ProjectTaskTable({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  useSyncAppBusyState("project-task-selection", isPending, "Loading task details...");
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div
+      aria-busy={isPending}
+      className={cn(
+        "overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-opacity dark:border-zinc-800 dark:bg-zinc-900",
+        isPending && "pointer-events-none opacity-70",
+      )}
+    >
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse">
           <thead>
             <tr className="border-b border-zinc-200 bg-zinc-50/80 text-left text-xs uppercase tracking-[0.18em] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-400">
-              <th className="px-5 py-4 font-semibold">Task</th>
+              <th className="px-5 py-4 font-semibold">Task name</th>
               <th className="px-5 py-4 font-semibold">Assignee</th>
               <th className="px-5 py-4 font-semibold">Status</th>
-              <th className="px-5 py-4 font-semibold">Priority</th>
-              <th className="px-5 py-4 font-semibold">Start</th>
-              <th className="px-5 py-4 font-semibold">End</th>
+              <th className="px-5 py-4 font-semibold">Start date</th>
+              <th className="px-5 py-4 font-semibold">End date</th>
             </tr>
           </thead>
           <tbody>
@@ -57,8 +67,10 @@ export function ProjectTaskTable({
                 onClick={() => {
                   const params = new URLSearchParams(searchParams.toString());
                   params.set("task", task.id);
-                  router.replace(`${pathname}?${params.toString()}`, {
-                    scroll: false,
+                  startTransition(() => {
+                    router.replace(`${pathname}?${params.toString()}`, {
+                      scroll: false,
+                    });
                   });
                 }}
               >
@@ -81,9 +93,6 @@ export function ProjectTaskTable({
                 <td className="px-5 py-4">
                   <Badge variant="neutral">{formatTaskStatus(task.status)}</Badge>
                 </td>
-                <td className="px-5 py-4">
-                  <Badge variant={getPriorityVariant(task.priority)}>{task.priority}</Badge>
-                </td>
                 <td className="px-5 py-4 text-sm text-zinc-600 dark:text-zinc-300">{formatDate(task.startDate)}</td>
                 <td className="px-5 py-4 text-sm text-zinc-600 dark:text-zinc-300">{formatDate(task.dueDate)}</td>
               </tr>
@@ -93,22 +102,6 @@ export function ProjectTaskTable({
       </div>
     </div>
   );
-}
-
-function getPriorityVariant(priority: string) {
-  if (priority === "URGENT") {
-    return "danger";
-  }
-
-  if (priority === "HIGH") {
-    return "warning";
-  }
-
-  if (priority === "LOW") {
-    return "success";
-  }
-
-  return "neutral";
 }
 
 function formatTaskStatus(status: string) {

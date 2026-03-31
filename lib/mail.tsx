@@ -68,7 +68,7 @@ export async function sendWorkspaceInviteEmail({
 
   await sendMail({
     to,
-    subject: "You’ve been invited to join x-wrike",
+    subject: "You’ve been invited to join XManager",
     react: (
       <WorkspaceInviteEmail
         workspaceName={workspaceName}
@@ -159,7 +159,7 @@ export async function sendWelcomeEmail({
 }) {
   await sendMail({
     to,
-    subject: "Welcome to x-wrike",
+    subject: "Welcome to XManager",
     react: (
       <WelcomeEmail
         fullName={fullName}

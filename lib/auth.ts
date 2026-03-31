@@ -92,6 +92,21 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID ?? "google-client-id",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "google-client-secret",
       allowDangerousEmailAccountLinking: false,
+      // Avoid runtime OIDC discovery on every sign-in attempt and tolerate slower outbound links.
+      wellKnown: "",
+      issuer: "https://accounts.google.com",
+      authorization: {
+        url: "https://accounts.google.com/o/oauth2/v2/auth",
+        params: {
+          scope: "openid email profile",
+        },
+      },
+      token: "https://oauth2.googleapis.com/token",
+      userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+      jwks_endpoint: "https://www.googleapis.com/oauth2/v3/certs",
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
   callbacks: {
