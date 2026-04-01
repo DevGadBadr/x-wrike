@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Bell,
   FolderKanban,
@@ -29,16 +29,10 @@ export function AppSidebar({
 }: {
   workspaceName: string;
   explorer: {
-    folders: Array<{
-      id: string;
-      name: string;
-      parentFolderId: string | null;
-    }>;
     projects: Array<{
       id: string;
       name: string;
       key?: string;
-      folderId: string | null;
       status?: string;
       taskCount?: number;
       openTaskCount?: number;
@@ -46,17 +40,20 @@ export function AppSidebar({
   };
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isProjectsRoute = pathname === "/projects" || pathname.startsWith("/projects/");
-  const selectedFolderId = searchParams.get("folder");
   const selectedProjectId = pathname.startsWith("/projects/") ? pathname.split("/")[2] ?? null : null;
 
   return (
     <aside className="flex h-screen w-72 flex-col border-r border-zinc-200 bg-[#f7f9fc] px-4 py-5 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50">
-      <div className="mb-6 rounded-2xl border border-zinc-200 bg-white px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-600">Workspace</p>
-        <h1 className="mt-2 text-xl font-semibold">{workspaceName}</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">XManager control center</p>
+      <div
+        aria-label={workspaceName}
+        className="mb-6 rounded-2xl border border-zinc-200 bg-white px-4 py-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+      >
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-xl font-semibold tracking-[0.08em] text-zinc-950 dark:text-zinc-50">XManager</h1>
+          </div>
+        </div>
       </div>
 
       <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
@@ -86,9 +83,7 @@ export function AppSidebar({
                   <ExplorerTree
                     assets={explorer.projects}
                     basePath="/projects"
-                    folders={explorer.folders}
                     selectedAssetId={selectedProjectId}
-                    selectedFolderId={selectedFolderId}
                     title="Projects"
                     variant="sidebar"
                   />
@@ -98,13 +93,6 @@ export function AppSidebar({
           );
         })}
       </nav>
-
-      <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-sm font-medium text-zinc-950 dark:text-zinc-50">Structured delivery workspace</p>
-        <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-          Hierarchies, project control views, assignments, activity, and invite-only onboarding are all available from one shell.
-        </p>
-      </div>
     </aside>
   );
 }

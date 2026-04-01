@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+Run the local development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Model
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+XManager supports two deployment shapes:
 
-## Learn More
+- Production: `https://devgadbadr.com/xmanager`
+- Development HTTPS host: `https://xmanager.devgadbadr.com`
 
-To learn more about Next.js, take a look at the following resources:
+The deployment shape is driven by these env vars:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `APP_ENV=production|development`
+- `APP_BASE_PATH=/xmanager` in production and empty in development
+- `NEXT_PUBLIC_APP_ENV` and `NEXT_PUBLIC_APP_BASE_PATH` for client-side routing/auth helpers
+- `APP_URL`, `AUTH_URL`, and `NEXTAUTH_URL` set to the canonical origin for the active environment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Use `.env.example` as the template for local or server env files.
 
-## Deploy on Vercel
+## PM2 Targets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `xmanager-3008`: production `next start` on port `3008`
+- `xmanager-dev-3018`: development `next dev` on port `3018`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Production deploy remains:
+
+```bash
+./scripts/deploy.sh
+```
+
+Dev HTTPS host process:
+
+```bash
+pm2 startOrRestart ecosystem.config.cjs --only xmanager-dev-3018
+pm2 save
+```
+
+## HTTPS Dev Host
+
+The Nginx template for the dev host lives at
+[`infra/nginx/xmanager.devgadbadr.com.conf`](/root/Gad/web/Apps/xmanager/infra/nginx/xmanager.devgadbadr.com.conf).
+
+Google OAuth must include:
+
+- Authorized JavaScript origin: `https://xmanager.devgadbadr.com`
+- Authorized redirect URI: `https://xmanager.devgadbadr.com/api/auth/callback/google`

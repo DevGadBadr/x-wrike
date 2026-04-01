@@ -20,7 +20,6 @@ export async function createProjectAction(
     assertPermission(membership.role, "projects:create");
 
     const values = projectSchema.parse({
-      folderId: getFormValue(formData, "folderId") || undefined,
       name: getFormValue(formData, "name"),
       key: getFormValue(formData, "key").toUpperCase(),
       description: getFormValue(formData, "description"),
@@ -32,7 +31,6 @@ export async function createProjectAction(
       workspaceId: membership.workspaceId,
       ownerMembershipId: membership.id,
       actorUserId: membership.userId,
-      folderId: values.folderId || null,
       name: values.name,
       key: values.key,
       description: values.description,

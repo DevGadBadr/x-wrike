@@ -1,7 +1,6 @@
 import { PlusSquare } from "lucide-react";
 
 import { CommentForm } from "@/components/forms/comment-form";
-import { FolderForm } from "@/components/forms/folder-form";
 import { ProjectForm } from "@/components/forms/project-form";
 import { TaskForm } from "@/components/forms/task-form";
 import { TaskUpdateForm } from "@/components/forms/task-update-form";
@@ -18,14 +17,12 @@ import { ProjectTaskTable } from "@/components/projects/task-table";
 export async function ProjectsWorkspace({
   workspaceId,
   selectedProjectId,
-  selectedFolderId,
   selectedTaskId,
   assigneeMembershipId,
   search,
 }: {
   workspaceId: string;
   selectedProjectId?: string;
-  selectedFolderId?: string;
   selectedTaskId?: string;
   assigneeMembershipId?: string;
   search?: string;
@@ -41,15 +38,6 @@ export async function ProjectsWorkspace({
       : Promise.resolve(null),
     selectedTaskId ? getTaskDetails(selectedTaskId, workspaceId).catch(() => null) : Promise.resolve(null),
   ]);
-
-  const selectedFolder =
-    explorer.folders.find((folder) => folder.id === selectedFolderId) ??
-    (projectWorkspace?.folder ? explorer.folders.find((folder) => folder.id === projectWorkspace.folder?.id) : null) ??
-    null;
-  const folderOptions = buildFolderOptions(explorer.folders);
-  const folderProjectCount = selectedFolder
-    ? explorer.projects.filter((project) => project.folderId === selectedFolder.id).length
-    : 0;
   const panelTask =
     selectedTask && projectWorkspace && selectedTask.projectId === projectWorkspace.id ? selectedTask : null;
   const filterAssignees = projectWorkspace
@@ -72,7 +60,6 @@ export async function ProjectsWorkspace({
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="default">{projectWorkspace.status}</Badge>
-                    {projectWorkspace.folder ? <Badge variant="neutral">{projectWorkspace.folder.name}</Badge> : null}
                     <Badge variant="neutral">{projectWorkspace.key}</Badge>
                   </div>
                   <div>
@@ -114,34 +101,14 @@ export async function ProjectsWorkspace({
               />
             )}
           </>
-        ) : selectedFolder ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>{selectedFolder.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <p className="text-sm leading-7 text-zinc-600 dark:text-zinc-300">
-                This folder is ready for multiple projects. Choose a project from the hierarchy or create a new project in
-                this branch to start managing tasks in the main view.
-              </p>
-              <div className="grid gap-3 md:grid-cols-3">
-                <MetricChip label="Direct projects" value={String(folderProjectCount)} />
-                <MetricChip
-                  label="Sub-folders"
-                  value={String(explorer.folders.filter((folder) => folder.parentFolderId === selectedFolder.id).length)}
-                />
-                <MetricChip label="Scope" value="Projects" />
-              </div>
-            </CardContent>
-          </Card>
-        ) : explorer.projects.length === 0 && explorer.folders.length === 0 ? (
+        ) : explorer.projects.length === 0 ? (
           <EmptyState
-            description="Create a folder or project from the right panel to start structuring work in a Wrike-style hierarchy."
-            title="No project structure yet"
+            description="Create a project from the right panel to start organizing work."
+            title="No projects yet"
           />
         ) : (
           <EmptyState
-            description="Select a folder or project from the sidebar hierarchy. Projects open in a task control view with filters and task details."
+            description="Select a project from the sidebar to open its task control view, filters, and task details."
             title="Choose a project"
           />
         )}
@@ -249,25 +216,14 @@ export async function ProjectsWorkspace({
                   <div>
                     <p className="font-medium text-zinc-950 dark:text-zinc-50">Create structure from here</p>
                     <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                      Add folders and projects, then select a project from the sidebar to manage its tasks.
+                      Add a project, then select it from the sidebar to manage its tasks.
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <FolderForm
-              className="border-dashed shadow-none"
-              defaultParentFolderId={selectedFolder?.id ?? ""}
-              folderOptions={folderOptions}
-              title="New folder"
-            />
-            <ProjectForm
-              className="border-dashed shadow-none"
-              defaultFolderId={selectedFolder?.id ?? ""}
-              folderOptions={folderOptions}
-              title="New project"
-            />
+            <ProjectForm className="border-dashed shadow-none" title="New project" />
           </div>
         )}
       </aside>
@@ -303,19 +259,4 @@ function PanelMeta({
       <p className="mt-2 text-sm font-medium text-zinc-950 dark:text-zinc-50">{value}</p>
     </div>
   );
-}
-
-function buildFolderOptions(
-  folders: Array<{ id: string; name: string; parentFolderId: string | null }>,
-  parentFolderId: string | null = null,
-  depth = 0,
-): Array<{ id: string; name: string; depth: number }> {
-  const branch = folders
-    .filter((folder) => folder.parentFolderId === parentFolderId)
-    .sort((left, right) => left.name.localeCompare(right.name));
-
-  return branch.flatMap((folder) => [
-    { id: folder.id, name: folder.name, depth },
-    ...buildFolderOptions(folders, folder.id, depth + 1),
-  ]);
 }

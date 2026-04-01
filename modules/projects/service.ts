@@ -24,59 +24,39 @@ export async function listProjects(workspaceId: string) {
 }
 
 export async function listProjectExplorer(workspaceId: string) {
-  const [folders, projects] = await Promise.all([
-    db.folder.findMany({
-      where: {
-        workspaceId,
-        scope: "PROJECT",
-        isArchived: false,
-      },
-      orderBy: [
-        {
-          sortOrder: "asc",
+  const projects = await db.project.findMany({
+    where: {
+      workspaceId,
+      isArchived: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      key: true,
+      status: true,
+      tasks: {
+        where: {
+          isArchived: false,
         },
-        {
-          name: "asc",
-        },
-      ],
-    }),
-    db.project.findMany({
-      where: {
-        workspaceId,
-        isArchived: false,
-      },
-      select: {
-        id: true,
-        name: true,
-        key: true,
-        status: true,
-        folderId: true,
-        tasks: {
-          where: {
-            isArchived: false,
-          },
-          select: {
-            id: true,
-            status: true,
-          },
+        select: {
+          id: true,
+          status: true,
         },
       },
-      orderBy: [
-        {
-          name: "asc",
-        },
-      ],
-    }),
-  ]);
+    },
+    orderBy: [
+      {
+        name: "asc",
+      },
+    ],
+  });
 
   return {
-    folders,
     projects: projects.map((project) => ({
       id: project.id,
       name: project.name,
       key: project.key,
       status: project.status,
-      folderId: project.folderId,
       taskCount: project.tasks.length,
       openTaskCount: project.tasks.filter((task) => task.status !== "DONE" && task.status !== "CANCELLED").length,
     })),
@@ -222,32 +202,12 @@ export async function createProject(input: {
   key: string;
   description?: string;
   status: ProjectStatus;
-  folderId?: string | null;
   dueDate?: string;
 }) {
-  if (input.folderId) {
-    const folder = await db.folder.findFirst({
-      where: {
-        id: input.folderId,
-        workspaceId: input.workspaceId,
-        scope: "PROJECT",
-        isArchived: false,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (!folder) {
-      throw new Error("Selected folder is not available.");
-    }
-  }
-
   const project = await db.project.create({
     data: {
       workspaceId: input.workspaceId,
       ownerMembershipId: input.ownerMembershipId,
-      folderId: input.folderId || null,
       name: input.name,
       key: input.key,
       description: input.description || null,

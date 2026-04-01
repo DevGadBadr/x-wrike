@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const projectSchema = z.object({
-  folderId: z.string().cuid().optional().or(z.literal("")),
   name: z.string().min(2).max(100),
   key: z
     .string()

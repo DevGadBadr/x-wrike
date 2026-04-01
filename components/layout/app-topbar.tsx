@@ -1,3 +1,5 @@
+"use client";
+
 import { Bell } from "lucide-react";
 
 import { PendingLink } from "@/components/shared/pending-link";
@@ -32,7 +34,7 @@ export function AppTopbar({
   return (
     <header className="flex items-center justify-between border-b border-zinc-200 bg-white/92 px-6 py-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/88">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">XManager</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-600">XManagerr</p>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Structured workspace operations and execution control
         </p>
