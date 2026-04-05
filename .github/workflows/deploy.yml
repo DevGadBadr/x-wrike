@@ -2,7 +2,7 @@ name: Deploy on push to master
 on:
     push:
         branches:
-            - master
+            - main
 jobs:
     deploy:
         runs-on: ubuntu-latest
@@ -16,6 +16,6 @@ jobs:
                     script: |
                         cd /root/Gad/web/Apps/xmanager
                         git fetch origin
-                        git reset --hard origin/master
+                        git reset --hard origin/main
                         ./scripts/deploy.sh
 
