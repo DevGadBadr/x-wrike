@@ -269,7 +269,7 @@ export function ProjectWorkspaceView({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 xl:grid xl:h-full xl:min-h-0 xl:grid-rows-[auto_auto_minmax(0,1fr)]">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-3 xl:grid xl:min-h-0 xl:grid-rows-[auto_minmax(0,1fr)]">
       <div className="rounded-2xl border border-zinc-200 bg-white px-3 py-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:px-3.5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between xl:items-center">
           <div className="min-w-0 flex-1">
@@ -573,19 +573,19 @@ function ProjectTaskBoard({
     <div
       aria-busy={isBusy}
       className={cn(
-        "grid h-full min-h-0 min-w-0 w-full flex-1 grid-cols-1 gap-3 md:grid-cols-2 xl:auto-rows-fr xl:grid-cols-4",
+        "grid h-full min-h-0 min-w-0 w-full flex-1 grid-cols-1 gap-3 md:auto-rows-fr md:grid-cols-2 xl:grid-cols-4",
         isBusy && "pointer-events-none opacity-70",
       )}
     >
       {columns.map((column) => (
-        <Card className="flex h-full min-h-[26rem] min-w-0 flex-col overflow-hidden xl:min-h-0" key={column.id}>
+        <Card className="flex h-full min-h-[26rem] min-w-0 flex-col overflow-hidden md:min-h-0" key={column.id}>
           <CardHeader className="border-b border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/70">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-sm sm:text-base">{column.title}</CardTitle>
               <Badge variant="neutral">{column.tasks.length}</Badge>
             </div>
           </CardHeader>
-          <CardContent className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+          <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
             {column.tasks.length > 0 ? (
               column.tasks.map((task) => (
                 <div

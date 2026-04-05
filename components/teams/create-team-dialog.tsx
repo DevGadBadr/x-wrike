@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 
 import { TeamForm } from "@/components/forms/team-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export function CreateTeamDialog({
   memberships,
@@ -25,6 +25,7 @@ export function CreateTeamDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create team</DialogTitle>
+          <DialogDescription>Create a team and choose the members responsible for it.</DialogDescription>
         </DialogHeader>
         <TeamForm
           className="border-0 shadow-none"

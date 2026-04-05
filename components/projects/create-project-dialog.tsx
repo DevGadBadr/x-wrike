@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 
 import { ProjectForm } from "@/components/forms/project-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
@@ -21,6 +21,7 @@ export function CreateProjectDialog() {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create project</DialogTitle>
+          <DialogDescription>Set up a new project workspace with its name, details, and ownership.</DialogDescription>
         </DialogHeader>
         <ProjectForm className="border-0 shadow-none" onSuccess={() => setOpen(false)} title="Project details" />
       </DialogContent>

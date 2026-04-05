@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import { AppNavigationProvider, useAppNavigation } from "@/components/providers/app-navigation-provider";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export function AppShell({
@@ -72,9 +72,9 @@ function ShellFrame({
     : topbar;
 
   return (
-    <div className="flex min-h-screen bg-[#eef2f7] dark:bg-[#0d1117]">
+    <div className="flex h-dvh overflow-hidden bg-[#eef2f7] dark:bg-[#0d1117]">
       {sidebarElement}
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="relative">
           {topbarElement}
           <div
@@ -87,8 +87,13 @@ function ShellFrame({
             <div className="h-full w-full origin-left animate-[app-shell-progress_1.15s_ease-in-out_infinite] bg-sky-500/70" />
           </div>
         </div>
-        <main aria-busy={isBusy} className="relative flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-5">
-          <div className={cn("transition-opacity duration-200", isBusy && "pointer-events-none opacity-45")}>
+        <main aria-busy={isBusy} className="relative flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-4 sm:px-5 sm:py-5 lg:px-5">
+          <div
+            className={cn(
+              "flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity duration-200",
+              isBusy && "pointer-events-none opacity-45",
+            )}
+          >
             {children}
           </div>
           <div
@@ -108,10 +113,10 @@ function ShellFrame({
       <Dialog onOpenChange={setMobileSidebarOpen} open={mobileSidebarOpen}>
         <DialogContent
           aria-label="Navigation menu"
-          aria-describedby={undefined}
           className="left-0 top-0 h-dvh w-[min(21rem,100vw-1rem)] max-w-none translate-x-0 translate-y-0 rounded-none rounded-r-3xl border-l-0 border-t-0 border-zinc-200 bg-[#f7f9fc] p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 lg:hidden"
         >
           <DialogTitle className="sr-only">Navigation menu</DialogTitle>
+          <DialogDescription className="sr-only">Use this panel to move between workspace sections.</DialogDescription>
           {mobileSidebarElement}
         </DialogContent>
       </Dialog>

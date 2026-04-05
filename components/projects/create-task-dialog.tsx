@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 
 import { TaskForm } from "@/components/forms/task-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export function CreateTaskDialog({
@@ -30,6 +30,7 @@ export function CreateTaskDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create task</DialogTitle>
+          <DialogDescription>Add a new task for this project and assign the right owner, status, and due date.</DialogDescription>
         </DialogHeader>
         <TaskForm
           className="border-0 shadow-none"

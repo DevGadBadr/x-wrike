@@ -39,7 +39,7 @@ export async function ProjectsWorkspace({
       }));
 
   return (
-    <div className={cn("space-y-3", projectWorkspace && "flex min-h-0 flex-col space-y-0 xl:min-h-[calc(100dvh-6rem)]")}>
+    <div className={cn("space-y-3", projectWorkspace && "flex h-full min-h-0 flex-1 flex-col space-y-0")}>
       <section className={cn("min-w-0 space-y-3", projectWorkspace && "flex min-h-0 flex-1 flex-col space-y-0")}>
         {projectWorkspace ? (
           <>
