@@ -45,9 +45,16 @@ export function PendingLink({
         }
       }}
       onNavigate={(event) => {
-        onNavigate?.(event);
+        let navigationPrevented = false;
 
-        if (event.defaultPrevented || href === currentHref) {
+        onNavigate?.({
+          preventDefault: () => {
+            navigationPrevented = true;
+            event.preventDefault();
+          },
+        });
+
+        if (navigationPrevented || href === currentHref) {
           return;
         }
 
